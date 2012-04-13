@@ -4,7 +4,12 @@ import java.io.IOException;
 
 import quantifiedAndroid.utilities.SoundUtilities;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.media.MediaRecorder;
 import android.os.IBinder;
 import android.telephony.PhoneStateListener;
@@ -20,13 +25,49 @@ public class MyService extends Service {
    
    private TelephonyManager mTelephonyManager;
    
+   private int CurState;
+   
+   
    private PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
-
+	   /*
+	   @Override
+	   public void onDataConnectionStateChanged(int state){
+		   
+		   super.onDataConnectionStateChanged(state);
+		   
+		   if(CurState == state){
+			   return;
+		   }
+		   
+		   CurState = state;
+		   switch(state){
+		   
+		   case TelephonyManager.DATA_CONNECTED:
+			   if(!first_state)
+				   startRecording();
+			   else
+				   first_state = false;
+			   break;
+		   case TelephonyManager.DATA_DISCONNECTED:
+			   if(!first_state)
+				   stopRecording();
+			   else
+				   first_state = false;
+			   break;
+		   }
+		   
+	   }
+	   */
+   
+	   
 	    @Override
 	    public void onCallStateChanged(int state, String incomingNumber) {
 
 	    	super.onCallStateChanged(state, incomingNumber);
-	        	    	
+		    if(CurState == state){
+		    	return;
+		   }
+		    
 	        switch (state) {
 	        
 	        case TelephonyManager.CALL_STATE_OFFHOOK:
@@ -45,6 +86,7 @@ public class MyService extends Service {
 	        
 	        }
 	    }
+	   
 
 	};
 	
@@ -52,7 +94,7 @@ public class MyService extends Service {
 	{
 		Log.i(TAG, "Start Recording");
 		try {
-			SoundUtilities.start_recording(recorder);
+			SoundUtilities.start_recording(recorder, MediaRecorder.AudioSource.VOICE_CALL);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			Log.e(TAG, e.getMessage());
@@ -70,8 +112,7 @@ public class MyService extends Service {
 			Log.e(TAG, e.getMessage());
 		}
 	}
-	
-	
+
    
    @Override
    public void onCreate() {
@@ -79,12 +120,13 @@ public class MyService extends Service {
 	   super.onCreate();
        
 	   this.showToastMessage("Service created...");      
-   
+	  
+	   
 	   first_state = true;
 	   recorder = new MediaRecorder();
-	   //recorder.setMaxDuration(2000);
 	   
 	   mTelephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+	   CurState = mTelephonyManager.getCallState();
 	   mTelephonyManager.listen(mPhoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
 	   
 	   Log.i(TAG, "Service created...");

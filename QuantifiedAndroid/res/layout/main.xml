@@ -11,10 +11,25 @@
         android:text="@string/start" 
         android:onClick="startService"/>
 
-        <Button
+    <Button
         android:id="@+id/stop_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/stop" 
         android:onClick="stopService"/>
+    
+    <Button
+        android:id="@+id/startRec_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/startRecording" 
+        android:onClick="startRecording"/>
+      
+   <Button
+        android:id="@+id/stopRec_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/stopRecording" 
+        android:onClick="stopRecording"/>
+        
 </LinearLayout>
