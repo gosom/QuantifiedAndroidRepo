@@ -14,17 +14,19 @@ import android.widget.Toast;
 
 public class MyService extends Service {
 	
-	private MediaRecorder recorder;
+   private boolean first_state;
+   private MediaRecorder recorder;
    private static final String TAG = "TestService";
+   
    private TelephonyManager mTelephonyManager;
    
    private PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
 
 	    @Override
 	    public void onCallStateChanged(int state, String incomingNumber) {
-	        
-	    	super.onCallStateChanged(state, incomingNumber);
 
+	    	super.onCallStateChanged(state, incomingNumber);
+	        	    	
 	        switch (state) {
 	        
 	        case TelephonyManager.CALL_STATE_OFFHOOK:
@@ -35,7 +37,10 @@ public class MyService extends Service {
 	        	break;
 	        
 	        case TelephonyManager.CALL_STATE_IDLE:
-	        	//stopRecording();
+	        	if(!first_state)
+	        		stopRecording();
+	        	else
+	        		first_state = false;
 	        	break;
 	        
 	        }
@@ -75,6 +80,7 @@ public class MyService extends Service {
        
 	   this.showToastMessage("Service created...");      
    
+	   first_state = true;
 	   recorder = new MediaRecorder();
 	   //recorder.setMaxDuration(2000);
 	   
