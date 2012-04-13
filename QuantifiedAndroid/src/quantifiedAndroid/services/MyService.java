@@ -1,24 +1,88 @@
 package quantifiedAndroid.services;
 
+import java.io.IOException;
+
+import quantifiedAndroid.utilities.SoundUtilities;
 import android.app.Service;
 import android.content.Intent;
+import android.media.MediaRecorder;
 import android.os.IBinder;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
 public class MyService extends Service {
 	
+	private MediaRecorder recorder;
    private static final String TAG = "TestService";
+   private TelephonyManager mTelephonyManager;
    
+   private PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
+
+	    @Override
+	    public void onCallStateChanged(int state, String incomingNumber) {
+	        
+	    	super.onCallStateChanged(state, incomingNumber);
+
+	        switch (state) {
+	        
+	        case TelephonyManager.CALL_STATE_OFFHOOK:
+	        	startRecording();
+	        	break;
+	        
+	        case TelephonyManager.CALL_STATE_RINGING:
+	        	break;
+	        
+	        case TelephonyManager.CALL_STATE_IDLE:
+	        	//stopRecording();
+	        	break;
+	        
+	        }
+	    }
+
+	};
+	
+	private void startRecording()
+	{
+		Log.i(TAG, "Start Recording");
+		try {
+			SoundUtilities.start_recording(recorder);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			Log.e(TAG, e.getMessage());
+		}
+	}
+	
+	
+	private void stopRecording()
+	{
+		Log.i(TAG, "Stopping Recording");
+		try {
+			SoundUtilities.stop_recording(recorder);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			Log.e(TAG, e.getMessage());
+		}
+	}
+	
+	
    
    @Override
    public void onCreate() {
    
 	   super.onCreate();
-       this.showToastMessage("Service created...");      
-   
-       Log.i(TAG, "Service created...");
        
+	   this.showToastMessage("Service created...");      
+   
+	   recorder = new MediaRecorder();
+	   //recorder.setMaxDuration(2000);
+	   
+	   mTelephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+	   mTelephonyManager.listen(mPhoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
+	   
+	   Log.i(TAG, "Service created...");
+   
    }
  
    
@@ -35,7 +99,10 @@ public class MyService extends Service {
    public void onDestroy() {
        
 	   super.onDestroy();
+	   
+	   mTelephonyManager.listen(mPhoneStateListener, PhoneStateListener.LISTEN_NONE);
 	   this.showToastMessage("Service destroyed...");
+   Log.i(TAG, "Service stopped...");
    
    }
 
