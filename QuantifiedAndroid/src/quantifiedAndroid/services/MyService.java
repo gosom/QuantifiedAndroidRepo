@@ -10,7 +10,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.MediaRecorder;
+import android.media.AudioRecord;
 import android.os.IBinder;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
@@ -20,13 +20,13 @@ import android.widget.Toast;
 public class MyService extends Service {
 	
    private boolean first_state;
-   private MediaRecorder recorder;
+   //private MediaRecorder recorder;
+   private AudioRecord recorder;
    private static final String TAG = "TestService";
    
    private TelephonyManager mTelephonyManager;
    
    private int CurState;
-   
    
    private PhoneStateListener mPhoneStateListener = new PhoneStateListener() {
 	   /*
@@ -92,25 +92,27 @@ public class MyService extends Service {
 	
 	private void startRecording()
 	{
+		/*
 		Log.i(TAG, "Start Recording");
 		try {
 			SoundUtilities.start_recording(recorder, MediaRecorder.AudioSource.VOICE_CALL);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			Log.e(TAG, e.getMessage());
-		}
+		}*/
 	}
 	
 	
 	private void stopRecording()
 	{
+		/*
 		Log.i(TAG, "Stopping Recording");
 		try {
 			SoundUtilities.stop_recording(recorder);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			Log.e(TAG, e.getMessage());
-		}
+		}*/
 	}
 
    
@@ -123,7 +125,7 @@ public class MyService extends Service {
 	  
 	   
 	   first_state = true;
-	   recorder = new MediaRecorder();
+	   //recorder = new MediaRecorder();
 	   
 	   mTelephonyManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
 	   CurState = mTelephonyManager.getCallState();

@@ -19,7 +19,7 @@ import android.widget.Toast;
 public class QuantifiedAndroidActivity extends Activity {
 	
 	Button start;
-	MediaRecorder recorder;
+	SoundUtilities SoundUtil;
 	private final String TAG = "QuatifiedAndroidActivity";
    
    @Override
@@ -30,32 +30,22 @@ public class QuantifiedAndroidActivity extends Activity {
 	   setContentView(R.layout.main);
 	   
 	   start = (Button) findViewById(R.id.start_button);
-	   recorder = new MediaRecorder();
+	   SoundUtil = new SoundUtilities(MediaRecorder.AudioSource.MIC);
 	   
 	}
 	
 	
    public void startRecording(View view){
 	   
-	   try {
-		   SoundUtilities.start_recording(recorder, MediaRecorder.AudioSource.MIC);
-	   } catch (IOException e) {
-		   // TODO Auto-generated catch block
-		   Log.i(TAG, e.getMessage());
-	   }
+		   SoundUtil.start_recording();
 	   
    }
    
    
    public void stopRecording(View view){
 	   
-	   try{
-		    SoundUtilities.stop_recording(recorder);
-	   } catch (IOException e){
+	   SoundUtil.stop_recording();
 		   
-		   Log.i(TAG, e.getMessage());
-	   }
-	   
    }
    
 	public void startService(View view){
