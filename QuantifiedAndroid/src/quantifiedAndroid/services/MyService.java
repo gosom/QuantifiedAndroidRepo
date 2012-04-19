@@ -2,7 +2,6 @@ package quantifiedAndroid.services;
 
 import java.io.IOException;
 
-import quantifiedAndroid.utilities.SoundUtilities;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
