@@ -1,7 +1,5 @@
 package quantifiedAndroid.classes;
 
-import java.io.DataOutputStream;
-
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder.AudioSource;
