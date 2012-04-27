@@ -1,7 +1,7 @@
 package quantifiedAndroid.activities;
 
 
-import quantifiedAndroid.classes.MyRecorder;
+import quantifiedAndroid.io.AudioIn;
 import quantifiedAndroid.packages.namespace.R;
 import quantifiedAndroid.services.MyService;
 import android.app.Activity;
@@ -14,7 +14,7 @@ public class QuantifiedAndroidActivity extends Activity {
 	
 	Button start;
 	private final String TAG = "QuatifiedAndroidActivity";
-	private MyRecorder runnable;
+	private AudioIn runnable;
    
    @Override
    protected void onCreate(Bundle savedInstanceState) {      
@@ -30,7 +30,7 @@ public class QuantifiedAndroidActivity extends Activity {
 	
    public void startRecording(View view){
 	   
-	   runnable = new MyRecorder();
+	   runnable = new AudioIn();
 	   
    }
    

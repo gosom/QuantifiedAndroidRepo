@@ -1,75 +1,61 @@
 package quantifiedAndroid.classes;
 
-import android.media.AudioFormat;
-import android.media.AudioRecord;
-import android.media.MediaRecorder.AudioSource;
-import android.util.Log;
 
-public class MyRecorder extends Thread
-{ 
+import android.media.AudioFormat; 
+import android.media.AudioRecord; 
+import android.media.MediaRecorder; 
+import android.util.Log; 
+public class MyRecorder extends Thread{ 
+  public static final int DEFAULT_SAMPLE_RATE = 8000; 
+  private static final int DEFAULT_BUFFER_SIZE = 4096; 
+  private static final int CALLBACK_PERIOD = 4000;  // 500 msec (sample rate / callback   //period) 
+private static final String TAG = "MyRecorder";
+  private final AudioRecord recorder;
+private boolean stopped = false;
+  
+  public MyRecorder() { 
+    this(DEFAULT_SAMPLE_RATE); 
+  }
+  
+  private MyRecorder(int sampleRate) { 
+    recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, 
+        sampleRate, AudioFormat.CHANNEL_CONFIGURATION_DEFAULT, 
+        AudioFormat.ENCODING_DEFAULT, DEFAULT_BUFFER_SIZE); 
+    start();
+  }
+  @Override
+  public void run() { 
+	  try{
+		  while(!stopped) { 
+              short[] buffer = new short[256];
 
-	private static final int RECORDER_SAMPLERATE = 8000;
-	private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
-	private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
-	
-	private static final String AUDIO_RECORDER_TEMP_FILE = "record_temp.raw";
-	private static final String AUDIO_RECORDER_FOLDER = "QuantifiedAndroid";
-	
-	
-	private boolean stopped = false;
-	private String TAG = "MyRecorder";
-	
-	
-	public MyRecorder()
-	{
-        android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_AUDIO);
-        start();
-	}
-	
-	@Override
-	public void run()
-    { 
-		Log.i(TAG, "Running MyRecorder Thread");
-		AudioRecord recorder = null;
-		short[][] buffers = new short[256][160];
-		int ix = 0;
-		MyProcessor pros = new MyProcessor(AUDIO_RECORDER_FOLDER, AUDIO_RECORDER_TEMP_FILE); 
-		
-		try
-		{
-			
-			int N = AudioRecord.getMinBufferSize(RECORDER_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING);
-			recorder = new AudioRecord(AudioSource.MIC, RECORDER_SAMPLERATE, RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING, N*10);
-			recorder.startRecording();
-			
-			while(!stopped)
-			{
-				Log.i("Map", "Writing new data to buffer");
-				short[] buffer = buffers[ix++ % buffers.length];
-				N = recorder.read(buffer, 0, buffer.length);
-				pros.writeToFile(buffer);
-				for(int i=0;i<10000;i++)
-				{
-					
-				}
-			}
-		}
-		catch(Throwable e)
-		{
-			Log.w(TAG, "Error reading voice audio", e);
-		}
-		finally
-		{
-			Log.i(TAG, "Stopping Recording");
-			recorder.stop();
-			recorder.release();
-			pros.closeFile();
-		}
-    }
-	
-	public void close()
-    { 
-         stopped = true;
-    }
+              int N = recorder.read(buffer,0,buffer.length);
+
+          } 
+	  } catch(Throwable x) { 
+	      Log.w(TAG,"Error reading voice audio",x);
+	    } finally { 
+	      close();
+	    }
+  }
+  
+  public void close() {
+	stopped = true;
 	
 }
+
+public void start2() { 
+    recorder.setPositionNotificationPeriod(CALLBACK_PERIOD); 
+    recorder.setRecordPositionUpdateListener(new 
+	AudioRecord.OnRecordPositionUpdateListener() { 
+      public void onMarkerReached(AudioRecord recorder) { 
+        Log.e(this.getClass().getSimpleName(), "onMarkerReached Called"); 
+      } 
+      public void onPeriodicNotification(AudioRecord recorder) { 
+        Log.e(this.getClass().getSimpleName(), "onPeriodicNotification Called"); 
+      } 
+    }); 
+    recorder.startRecording(); 
+  }
+}
+   
